@@ -138,3 +138,10 @@ control$.subscribe(({ selectedEvent, qty }) => {
   select.value = selectedEvent;
   qtyInput.value = qty;
 });
+
+// Bind price state to view.
+priceInfo$.subscribe(({ price, calculating }) => {
+  document.getElementById('calculating').style.display = calculating ? 'block' : 'none';
+  document.getElementById('price-total-wrapper').style.display = calculating ? 'none' : 'block';
+  document.getElementById('price-total').innerHTML = price;
+});

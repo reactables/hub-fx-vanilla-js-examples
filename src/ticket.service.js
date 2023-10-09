@@ -1,6 +1,9 @@
+import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+
 export class TicketService {
   static prices = {
-    'Chili Cookoff': 20,
+    'Chili Cook Off': 20,
     'Itchy And Scratchy Movie': 40,
     'Grammar Rodeo': 50,
   };
@@ -8,6 +11,6 @@ export class TicketService {
   constructor() {}
 
   static getPrice({ event, qty }) {
-    return of(this.prices[event] * qty).pipe(delay(1000));
+    return of(TicketService.prices[event] * qty).pipe(delay(1000));
   }
 }
