@@ -1,20 +1,39 @@
 import { HubFactory } from '@hub-fx/core';
-import { mergeMap, map, filter } from 'rxjs/operators';
 import { TodoService } from './services/todoService';
+import { switchMap, map } from 'rxjs/operators';
 
 // Actions
 const SEND_TODO_STATUS_UPDATE = 'SEND_TODO_STATUS_UPDATE';
 const sendTodoStatusUpdate = (
-  payload // { todoId: number, status: 'done' | 'incomplete' | 'in progress' }
+  payload, // { todoId: number, status: 'done' | 'incomplete' | 'in progress' }
+  // Provide the method from Todos API service for updating Todos
+  updateTodo
 ) => ({
   type: SEND_TODO_STATUS_UPDATE,
   payload,
+  scopedEffects: {
+    // Provide key so effect stream is dynamically created for SEND_TODO_STATUS_UPDATE on todo.id
+    key: payload.todoId,
+
+    // Scoped Effects to listen for update todo action and handling update todo API call
+    effects: [
+      (actions$) => {
+        return actions$.pipe(
+          // Call todo API Service - switchMap operator cancels previous pending call if a new one is initiated
+          switchMap(({ payload }) => updateTodo(payload)),
+
+          // Map success response to appropriate action
+          map((payload) => todoStatusUpdateSuccess(payload))
+        );
+      },
+    ],
+  },
 });
 
 const TODO_STATUS_UPDATE_SUCCESS = 'TODO_STATUS_UPDATE_SUCCESS';
 const todoStatusUpdateSuccess = (payload) => ({
   type: TODO_STATUS_UPDATE_SUCCESS,
-  payload, // { todoId: number, status: 'done' | 'incomplete' | 'in progress' }
+  payload,
 });
 
 // State
@@ -39,9 +58,9 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action?.type) {
     case SEND_TODO_STATUS_UPDATE:
-      return {
-        // Find todo and setting updating flag to true
+      // Find todo and setting updating flag to true
 
+      return {
         todos: state.todos.reduce((acc, todo) => {
           const { todoId } = action.payload;
 
@@ -51,9 +70,9 @@ const reducer = (state = initialState, action) => {
         }, []),
       };
     case TODO_STATUS_UPDATE_SUCCESS:
-      return {
-        // Find todo and mark new status and set updating flag to false
+      // Find todo and mark new status and set updating flag to false
 
+      return {
         todos: state.todos.reduce((acc, todo) => {
           const { todoId, status } = action.payload;
 
@@ -66,27 +85,8 @@ const reducer = (state = initialState, action) => {
   return state;
 };
 
-// Effect to listen for update todo action and handling update todo API call
-const updateTodoEffect =
-  (
-    // Provide the method from Todos API service for updating Todos
-    updateTodo
-  ) =>
-  (actions$) => {
-    return actions$.pipe(
-      // Effect will only react for update todo action
-      filter((action) => action.type === SEND_TODO_STATUS_UPDATE),
-
-      // Call todo API Service
-      mergeMap(({ payload }) => updateTodo(payload)),
-
-      // Map success response to appropriate action
-      map((payload) => todoStatusUpdateSuccess(payload))
-    );
-  };
-
 // Initialize hub
-const hub = HubFactory({ effects: [updateTodoEffect(TodoService.updateTodo)] });
+const hub = HubFactory();
 
 // Initialize observable stream
 const store$ = hub.store({ reducer });
@@ -141,7 +141,12 @@ function renderTodos(state) {
 
       // Bind onchange handler to dispatch status change
       select.onchange = (event) =>
-        hub.dispatch(sendTodoStatusUpdate({ todoId: todo.id, status: event.target.value }));
+        hub.dispatch(
+          sendTodoStatusUpdate(
+            { todoId: todo.id, status: event.target.value },
+            TodoService.updateTodo
+          )
+        );
 
       todoInner.appendChild(select);
     }

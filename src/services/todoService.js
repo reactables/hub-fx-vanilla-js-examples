@@ -5,6 +5,6 @@ export class TodoService {
   constructor() {}
 
   static updateTodo(payload) {
-    return of(payload).pipe(delay(1000));
+    return of(payload).pipe(delay(2000));
   }
 }
