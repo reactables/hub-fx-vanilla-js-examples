@@ -1,4 +1,4 @@
-import { Hub, HubFactory } from '@hub-fx/core';
+import { HubFactory } from '@hub-fx/core';
 import { tap } from 'rxjs/operators';
 
 const hub = HubFactory();
