@@ -14,7 +14,7 @@ const sendTodoStatusUpdate = (
 const TODO_STATUS_UPDATE_SUCCESS = 'TODO_STATUS_UPDATE_SUCCESS';
 const todoStatusUpdateSuccess = (payload) => ({
   type: TODO_STATUS_UPDATE_SUCCESS,
-  payload,
+  payload, // { todoId: number, status: 'done' | 'incomplete' | 'in progress' }
 });
 
 // State
@@ -85,16 +85,23 @@ const updateTodoEffect =
     );
   };
 
-const renderTodos = (state) => {
+// Initialize hub
+const hub = HubFactory({ effects: [updateTodoEffect(TodoService.updateTodo)] });
+
+// Initialize observable stream
+const store$ = hub.store({ reducer });
+
+// Render todos on state changes
+store$.subscribe(renderTodos);
+
+// Function for updating the DOM
+function renderTodos(state) {
+  // Cache the todos container and clear it.
   const todosContainer = document.querySelector('.todos');
   todosContainer.innerHTML = '';
-  const todos = state.todos.reduce((todoSelects, todo) => {
-    const options = [
-      { text: 'In Progress', value: 'in progress' },
-      { text: 'Incomplete', value: 'incomplete' },
-      { text: 'Done', value: 'done' },
-    ];
 
+  // Loop through update todos and update view
+  const todos = state.todos.reduce((todoSelects, todo) => {
     // Create todo container and description text
     const todoContainer = document.createElement('div');
     todoContainer.className = 'todo';
@@ -103,14 +110,23 @@ const renderTodos = (state) => {
     todoInner.appendChild(document.createTextNode(todo.description));
     todoContainer.appendChild(todoInner);
 
+    // If todo is updating just render the ...Updating message
     if (todo.updating) {
       const span = document.createElement('span');
       span.className = 'todo__updating';
       span.appendChild(document.createTextNode('...Updating'));
       todoInner.appendChild(span);
     } else {
+      // Create select element for todo and bind values and event handlers
+      const options = [
+        { text: 'In Progress', value: 'in progress' },
+        { text: 'Incomplete', value: 'incomplete' },
+        { text: 'Done', value: 'done' },
+      ];
+
       const select = document.createElement('select');
 
+      // Append option to select
       options.forEach((option) => {
         const optionEl = document.createElement('option');
         optionEl.text = option.text;
@@ -118,7 +134,12 @@ const renderTodos = (state) => {
         select.appendChild(optionEl);
       });
 
+      // Bind todo status to the select value
       select.value = todo.status;
+
+      // Bind onchange handler to dispatch status change
+      select.onchange = (event) =>
+        hub.dispatch(sendTodoStatusUpdate({ todoId: todo.id, status: event.target.value }));
 
       todoInner.appendChild(select);
     }
@@ -129,10 +150,4 @@ const renderTodos = (state) => {
   todos.forEach((todo) => {
     todosContainer.appendChild(todo);
   });
-};
-
-const hub = HubFactory({ effects: [updateTodoEffect(TodoService.updateTodo)] });
-const store$ = hub.store({ reducer });
-store$.subscribe((state) => {
-  renderTodos(state);
-});
+}
