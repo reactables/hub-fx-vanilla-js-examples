@@ -24,7 +24,6 @@ const store$ = hub.store({ reducer: countReducer });
 
 store$.subscribe(({ count }) => {
   // Update the count when state changes.
-
   document.getElementById('count').innerHTML = count;
 });
 
