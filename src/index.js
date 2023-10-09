@@ -110,14 +110,16 @@ function renderTodos(state) {
     todoInner.appendChild(document.createTextNode(todo.description));
     todoContainer.appendChild(todoInner);
 
-    // If todo is updating just render the ...Updating message
     if (todo.updating) {
+      // If todo is updating just render the ...Updating message
+
       const span = document.createElement('span');
       span.className = 'todo__updating';
       span.appendChild(document.createTextNode('...Updating'));
       todoInner.appendChild(span);
     } else {
       // Create select element for todo and bind values and event handlers
+
       const options = [
         { text: 'In Progress', value: 'in progress' },
         { text: 'Incomplete', value: 'incomplete' },
@@ -126,7 +128,7 @@ function renderTodos(state) {
 
       const select = document.createElement('select');
 
-      // Append option to select
+      // Append options to select
       options.forEach((option) => {
         const optionEl = document.createElement('option');
         optionEl.text = option.text;
