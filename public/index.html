@@ -8,7 +8,27 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Hubfx Test</h1>
+    <h1>Event Prices!</h1>
+    <div class="event-tickets">
+      <div class="event-tickets__event-select">
+        <label for="event-selection">Select an Event: </label>
+        <select id="event-selection">
+          <option value="Chili Cook Off">Chili Cook Off</option>
+          <option value="Grammar Rodeo">Grammar Rodeo</option>
+          <option value="Itchy And Scratchy Movie">Itchy And Scratchy Movie</option>
+        </select>
+      </div>
+      <div class="event-tickets__qty">
+        <label for="qty">Qty:</label>
+        <input id="qty" type="number" />
+      </div>
+      <div class="event-tickets__price-info">
+        <span>Calculating ...</span>
+        <div>
+          <b>Price Total: <span id="price-total"></span></b>
+        </div>
+      </div>
+    </div>
     <script src="main.js"></script>
   </body>
 </html>
