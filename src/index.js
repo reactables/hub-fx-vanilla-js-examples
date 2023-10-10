@@ -100,7 +100,7 @@ function renderTodos(state) {
   const todosContainer = document.querySelector('.todos');
   todosContainer.innerHTML = '';
 
-  // Loop through update todos and update view
+  // Loop through updated todos and update view
   const todos = state.todos.reduce((todoSelects, todo) => {
     // Create todo container and description text
     const todoContainer = document.createElement('div');
