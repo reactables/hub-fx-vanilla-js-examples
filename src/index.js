@@ -1,6 +1,8 @@
 import { EventTickets } from '@hub-fx/examples';
 import { TicketService } from './ticket.service';
 
+// See for implementation https://github.com/hub-fx/hub-fx/tree/main/packages/examples/src/EventTickets
+
 const {
   state$,
   actions: { selectEvent, setQty },
