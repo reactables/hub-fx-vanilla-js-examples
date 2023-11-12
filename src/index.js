@@ -19,10 +19,13 @@ const countReducer = (state = { count: 0 }, action) => {
   }
 };
 
+// Initialize Hub
 const hub = HubFactory();
-const store$ = hub.store({ reducer: countReducer });
 
-store$.subscribe(({ count }) => {
+// Initialize counter store
+const counterStore$ = hub.store({ reducer: countReducer });
+
+counterStore$.subscribe(({ count }) => {
   // Update the count when state changes.
   document.getElementById('count').innerHTML = count;
 });
