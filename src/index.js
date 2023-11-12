@@ -1,6 +1,9 @@
 import { TodoUpdates } from '@hub-fx/examples';
 import { TodoService } from './services/todoService';
 
+// See for implementation
+// https://github.com/hub-fx/hub-fx/tree/main/packages/examples/src/TodoUpdates
+
 const {
   state$,
   actions: { sendTodoStatusUpdate },
