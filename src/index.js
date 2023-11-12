@@ -1,98 +1,12 @@
-import { HubFactory } from '@hub-fx/core';
+import { TodoUpdates } from '@hub-fx/examples';
 import { TodoService } from './services/todoService';
-import { switchMap, map } from 'rxjs/operators';
 
-// Actions
-const SEND_TODO_STATUS_UPDATE = 'SEND_TODO_STATUS_UPDATE';
-const sendTodoStatusUpdate = (
-  payload, // { todoId: number, status: 'done' | 'incomplete' | 'in progress' }
-  // Provide the method from Todos API service for updating Todos
-  updateTodo
-) => ({
-  type: SEND_TODO_STATUS_UPDATE,
-  payload,
-  scopedEffects: {
-    // Provide key so effect stream is dynamically created for SEND_TODO_STATUS_UPDATE on todo.id
-    key: payload.todoId,
+const {
+  state$,
+  actions: { sendTodoStatusUpdate },
+} = TodoUpdates(TodoService.updateTodo);
 
-    // Scoped Effects to listen for update todo action and handling update todo API call
-    effects: [
-      (actions$) => {
-        return actions$.pipe(
-          // Call todo API Service - switchMap operator cancels previous pending call if a new one is initiated
-          switchMap(({ payload }) => updateTodo(payload)),
-
-          // Map success response to appropriate action
-          map((payload) => todoStatusUpdateSuccess(payload))
-        );
-      },
-    ],
-  },
-});
-
-const TODO_STATUS_UPDATE_SUCCESS = 'TODO_STATUS_UPDATE_SUCCESS';
-const todoStatusUpdateSuccess = (payload) => ({
-  type: TODO_STATUS_UPDATE_SUCCESS,
-  payload,
-});
-
-// State
-const initialState = {
-  todos: [
-    {
-      id: 1,
-      description: 'Pick Up Bart',
-      status: 'incomplete',
-      updating: false,
-    },
-    {
-      id: 2,
-      description: 'Moe the lawn',
-      status: 'incomplete',
-      updating: false,
-    },
-  ],
-};
-
-// Reducer for updating state
-const reducer = (state = initialState, action) => {
-  switch (action?.type) {
-    case SEND_TODO_STATUS_UPDATE:
-      // Find todo and setting updating flag to true
-
-      return {
-        todos: state.todos.reduce((acc, todo) => {
-          const { todoId } = action.payload;
-
-          const newTodo = todo.id === todoId ? { ...todo, updating: true } : todo;
-
-          return acc.concat(newTodo);
-        }, []),
-      };
-    case TODO_STATUS_UPDATE_SUCCESS:
-      // Find todo and mark new status and set updating flag to false
-
-      return {
-        todos: state.todos.reduce((acc, todo) => {
-          const { todoId, status } = action.payload;
-
-          const newTodo = todo.id === todoId ? { ...todo, status, updating: false } : todo;
-
-          return acc.concat(newTodo);
-        }, []),
-      };
-  }
-  return state;
-};
-
-// Initialize hub
-const hub = HubFactory();
-
-// Initialize observable stream
-const store$ = hub.store({ reducer });
-
-// Render todos on state changes
-store$.subscribe(renderTodos);
+state$.subscribe(renderTodos);
 
 // Function for updating the DOM
 function renderTodos(state) {
@@ -140,12 +54,7 @@ function renderTodos(state) {
 
     // Bind onchange handler to dispatch status change
     select.onchange = (event) =>
-      hub.dispatch(
-        sendTodoStatusUpdate(
-          { todoId: todo.id, status: event.target.value },
-          TodoService.updateTodo
-        )
-      );
+      sendTodoStatusUpdate({ todoId: todo.id, status: event.target.value });
 
     todoInner.appendChild(select);
 
