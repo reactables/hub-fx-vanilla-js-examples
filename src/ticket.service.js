@@ -8,9 +8,11 @@ export class TicketService {
     'Grammar Rodeo': 50,
   };
 
-  constructor() {}
-
   static getPrice({ event, qty }) {
-    return of(TicketService.prices[event] * qty).pipe(delay(1000));
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(TicketService.prices[event] * qty);
+      }, 1000);
+    });
   }
 }
