@@ -1,12 +1,12 @@
-import { Counter } from '@hub-fx/examples';
+import { RxCounter } from '@hub-fx/examples';
 
-// See for implementation
+// See for implementation and tests:
 // https://github.com/hub-fx/hub-fx/tree/main/packages/examples/src/Counter
 
 const {
   state$,
   actions: { increment, reset },
-} = Counter();
+} = RxCounter();
 
 state$.subscribe(({ count }) => {
   // Update the count when state changes.
