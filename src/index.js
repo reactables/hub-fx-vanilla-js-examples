@@ -1,13 +1,13 @@
-import { TodoUpdates } from '@hub-fx/examples';
+import { RxTodoUpdates } from '@hub-fx/examples';
 import { TodoService } from './services/todoService';
 
-// See for implementation
+// See for implementation and tests
 // https://github.com/hub-fx/hub-fx/tree/main/packages/examples/src/TodoUpdates
 
 const {
   state$,
   actions: { sendTodoStatusUpdate },
-} = TodoUpdates(TodoService.updateTodo);
+} = RxTodoUpdates(TodoService.updateTodo);
 
 state$.subscribe(renderTodos);
 
