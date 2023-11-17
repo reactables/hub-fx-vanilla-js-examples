@@ -1,11 +1,7 @@
-.event-tickets {
-  display: flex;
-}
-
 .event-tickets__qty {
-  margin-left: 30px;
+  margin: 30px 0;
 }
 
 .event-tickets__price-info {
-  margin-left: 30px;
+  margin-bottom: 30px;
 }

@@ -1,13 +1,13 @@
-import { EventTickets } from '@hub-fx/examples';
+import { RxEventTickets } from '@hub-fx/examples';
 import { TicketService } from './ticket.service';
 
-// See for implementation
+// See for implementation and Tests
 // https://github.com/hub-fx/hub-fx/tree/main/packages/examples/src/EventTickets
 
 const {
   state$,
   actions: { selectEvent, setQty },
-} = EventTickets(TicketService.getPrice);
+} = RxEventTickets(TicketService.getPrice);
 
 // Bind Select Control Handler
 const select = document.getElementById('event-selection');
